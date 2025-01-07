@@ -16,16 +16,17 @@ public class User {
     private String password;
     private String userId;
 
-    public User(String lastName, String firstName, String email, String password, String userId, String encode) {
+//    public User(String lastName, String firstName, String email, String password, String userId, String encode) {
+//
+//    }
 
-    }
-
-    public User(String firstName, String lastName, String email, String password, String userId) {
+    public User(Long id, String firstName, String lastName, String email, String password, String userId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.userId = userId;
+        this.id = id;
     }
 
     @ManyToMany(fetch = FetchType.EAGER)

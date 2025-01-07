@@ -1,6 +1,8 @@
 package com.odcl.lms.auth.controller;
 
+import com.odcl.lms.auth.dto.UserLoginDto;
 import com.odcl.lms.auth.dto.UserRegistrationDto;
+import com.odcl.lms.auth.model.User;
 import com.odcl.lms.auth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,25 +30,11 @@ public class UserController {
         return ResponseEntity.ok("User registered successfully");
     }
 
-    // Endpoint for user login
+
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody UserRegistrationDto userRegistrationDto) {
-        try {
-            // Authenticate the user using the provided email and password
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            userRegistrationDto.getEmail(), userRegistrationDto.getPassword()
-                    )
-            );
-
-            // Set the authentication in the security context
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            // Respond with a success message
-            return ResponseEntity.ok("Login successful");
-        } catch (Exception e) {
-            // Handle authentication failure
-            return ResponseEntity.status(401).body("Invalid credentials");
-        }
+    public ResponseEntity<String> login(@RequestBody UserLoginDto loginDto) {
+        User user = userService.login(loginDto);
+        return ResponseEntity.ok("Login successful for user: " + user.getFirstName() + " " + user.getLastName());
     }
+
 }

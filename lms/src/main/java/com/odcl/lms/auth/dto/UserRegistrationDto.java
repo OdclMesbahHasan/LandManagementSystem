@@ -1,12 +1,21 @@
 package com.odcl.lms.auth.dto;
 
-public class UserRegistrationDto {
+import jakarta.validation.constraints.NotEmpty;
 
+public class UserRegistrationDto {
+    private Long id;
     private String firstName;
     private String lastName;
     private String email;
     private String password;
     private String userId;
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public void setUserId(String userId) {
         this.userId = userId;
@@ -16,14 +25,13 @@ public class UserRegistrationDto {
     }
 
 
-
-
-    public UserRegistrationDto(String firstName, String lastName, String email, String password, String userId) {
+    public UserRegistrationDto(Long id, String firstName, String lastName, String email, String password, String userId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.userId = userId;
+        this.id = id;
     }
 
     public String getLastName() {
