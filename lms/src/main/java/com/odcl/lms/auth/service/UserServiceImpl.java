@@ -2,9 +2,7 @@ package com.odcl.lms.auth.service;
 
 import com.odcl.lms.auth.dto.UserLoginDto;
 import com.odcl.lms.auth.dto.UserRegistrationDto;
-import com.odcl.lms.auth.model.Role;
 import com.odcl.lms.auth.model.User;
-import com.odcl.lms.auth.repository.RoleRepository;
 import com.odcl.lms.auth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,37 +17,29 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final RoleRepository roleRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, RoleRepository roleRepository) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.roleRepository = roleRepository;
     }
-
 
 
     @Override
     public User save(UserRegistrationDto userRegistrationDto) {
-        Role role = roleRepository.findByName("USER")
-                .orElseGet(() -> {
-                    Role newRole = new Role();
-                    newRole.setName("USER");
-                    return roleRepository.save(newRole); // Save the role if not found
-                });
+        String encodedPassword = passwordEncoder.encode(userRegistrationDto.getPassword());
 
         User user = new User(
                 userRegistrationDto.getId(),
                 userRegistrationDto.getFirstName(),
                 userRegistrationDto.getLastName(),
                 userRegistrationDto.getEmail(),
-                userRegistrationDto.getUserId(),
-                userRegistrationDto.getPassword()
+                encodedPassword,
+                userRegistrationDto.getUserId()
+
         );
 
         validateUserRegistrationDto(userRegistrationDto);
-        user.setRoles(Collections.singletonList(role));
 
         return userRepository.save(user);
     }
@@ -73,8 +63,8 @@ public class UserServiceImpl implements UserService {
         User user = optionalUser.get();
 
         // Verify the password
-        if (passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-            Throwable cause = new IllegalArgumentException("Invalid email/user ID or password.");
+        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+            Throwable cause = new IllegalArgumentException("Invalid password.");
             throw new RuntimeException(cause);
         }
 
@@ -86,21 +76,6 @@ public class UserServiceImpl implements UserService {
         return input.matches(emailRegex);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByEmail(email);
-        if (user.isEmpty()) {
-            throw new UsernameNotFoundException("Invalid email or password.");
-        }
-        return new org.springframework.security.core.userdetails.User(
-                user.get().getEmail(),
-                user.get().getPassword(),
-                user.get().getRoles()
-                        .stream()
-                        .map(role -> new org.springframework.security.core.authority.SimpleGrantedAuthority(role.getName()))
-                        .toList() // Convert stream to List
-        );
-    }
 
     private void validateUserRegistrationDto(UserRegistrationDto userRegistrationDto) {
         // Validate each field using switch case
@@ -163,5 +138,9 @@ public class UserServiceImpl implements UserService {
         return field == null || field.trim().isEmpty();
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return null;
+    }
 }
 

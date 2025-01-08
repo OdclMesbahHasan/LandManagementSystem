@@ -2,8 +2,6 @@ package com.odcl.lms.auth.model;
 
 import jakarta.persistence.*;
 
-import java.util.Collection;
-
 @Entity
 @Table(name = "lms_user")
 public class User {
@@ -16,9 +14,6 @@ public class User {
     private String password;
     private String userId;
 
-//    public User(String lastName, String firstName, String email, String password, String userId, String encode) {
-//
-//    }
 
     public User(Long id, String firstName, String lastName, String email, String password, String userId) {
         this.firstName = firstName;
@@ -29,26 +24,10 @@ public class User {
         this.id = id;
     }
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_roles", // Join table name
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), // FK for User
-            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id") // FK for Role
-    )
-    public Collection<Role> roles;
 
     public User() {
 
     }
-
-    public Collection<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Collection<Role> roles) {
-        this.roles = roles;
-    }
-
 
     public String getEmail() {
         return email;
