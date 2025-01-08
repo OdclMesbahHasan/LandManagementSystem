@@ -1,71 +1,116 @@
-// RegistrationForm.jsx
 import React, { useState } from 'react';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import '../styles/RegistrationForm.css';
 
 const RegistrationForm = () => {
-    const [formSubmitted, setFormSubmitted] = useState(false);
-
-    const initialValues = {
-        name: '',
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        userId: ''
+    });
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value
+        });
     };
 
-    const validationSchema = Yup.object({
-        name: Yup.string().required('Name is required'),
-        email: Yup.string().email('Invalid email address').required('Email is required'),
-        password: Yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
-        confirmPassword: Yup.string()
-            .oneOf([Yup.ref('password'), null], 'Passwords must match')
-            .required('Confirm password is required')
-    });
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError(''); // Reset the error message
 
-    const handleSubmit = (values) => {
-        console.log('Form data', values);
-        setFormSubmitted(true);
+        try {
+            const response = await axios.post('http://localhost:8081/auth/register', formData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.status === 200) {
+                alert('User registered successfully!');
+                navigate('/');  // Redirect to home or login page
+            }
+        } catch (err) {
+            console.error('Error during registration:', err);
+            setError('An error occurred while registering the user.');
+        }
     };
 
     return (
-        <div className="container mt-5">
-            <h2 className="text-center">Register</h2>
+        <div className="registration-form-container">
+            <h2>Register</h2>
+            <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                    <label htmlFor="firstName">First Name</label>
+                    <input
+                        type="text"
+                        id="firstName"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
 
-            {formSubmitted && <div className="alert alert-success">Registration successful!</div>}
+                <div className="form-group">
+                    <label htmlFor="lastName">Last Name</label>
+                    <input
+                        type="text"
+                        id="lastName"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
 
-            <Formik
-                initialValues={initialValues}
-                validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
-                <Form>
-                    <div className="mb-3">
-                        <label htmlFor="name" className="form-label">Name</label>
-                        <Field type="text" id="name" name="name" className="form-control" />
-                        <ErrorMessage name="name" component="div" className="text-danger" />
-                    </div>
+                <div className="form-group">
+                    <label htmlFor="email">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
 
-                    <div className="mb-3">
-                        <label htmlFor="email" className="form-label">Email</label>
-                        <Field type="email" id="email" name="email" className="form-control" />
-                        <ErrorMessage name="email" component="div" className="text-danger" />
-                    </div>
+                <div className="form-group">
+                    <label htmlFor="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
 
-                    <div className="mb-3">
-                        <label htmlFor="password" className="form-label">Password</label>
-                        <Field type="password" id="password" name="password" className="form-control" />
-                        <ErrorMessage name="password" component="div" className="text-danger" />
-                    </div>
+                <div className="form-group">
+                    <label htmlFor="userId">User ID</label>
+                    <input
+                        type="text"
+                        id="userId"
+                        name="userId"
+                        value={formData.userId}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
 
-                    <div className="mb-3">
-                        <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
-                        <Field type="password" id="confirmPassword" name="confirmPassword" className="form-control" />
-                        <ErrorMessage name="confirmPassword" component="div" className="text-danger" />
-                    </div>
+                {error && <p className="error-message">{error}</p>}
 
-                    <button type="submit" className="btn btn-primary w-100">Register</button>
-                </Form>
-            </Formik>
+                <button type="submit">Register</button>
+            </form>
         </div>
     );
 };
