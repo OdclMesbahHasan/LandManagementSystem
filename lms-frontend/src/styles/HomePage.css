@@ -1,0 +1,61 @@
+/* General page styling */
+.home-page {
+    height: 100vh; /* Full viewport height */
+    width: 100%; /* Full viewport width */
+    background-image: url('../assets/Splash Screen.jpg');  /* Replace with your own image URL */    position: relative; /* For overlay content positioning */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Overlay for content */
+.home-page-overlay {
+    text-align: center;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    padding: 20px;
+    border-radius: 10px;
+    position: relative;
+}
+
+/* Background logo */
+.background-logo {
+    max-width: 500px; /* Adjust size as needed */
+    margin-bottom: 15px; /* Spacing below the logo */
+    animation: fadeIn 6s ease-in-out; /* Optional fade-in effect */
+}
+
+/* Logo styling */
+.logo {
+    font-size: 4rem; /* Adjust size as needed */
+    font-weight: bold;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    text-transform: uppercase;
+}
+
+/* Horizontal line */
+.separator {
+    width: 60%; /* Adjust width as needed */
+    margin: 10px auto; /* Center the line */
+    border: 1px solid white; /* Line color */
+    opacity: 0.7; /* Slight transparency */
+}
+
+/* Subtitle styling */
+.subtitle {
+    font-size: 1.5rem; /* Adjust size as needed */
+    margin-top: 10px;
+    font-family: 'Arial', sans-serif;
+    letter-spacing: 1px;
+}
+
+/* Optional fade-in animation for the background logo */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
